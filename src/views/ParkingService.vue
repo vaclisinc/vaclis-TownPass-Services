@@ -34,7 +34,7 @@ const currentSelectedPark = ref<ParkPoint | null>({
   remainingSpace: 48763,
   price: '40 元/小時',
   distance: 20,
-  type: 'park'
+  type: 'yellow_line'
 });
 
 const parkTimer = ref(0); // 單位：半小時
@@ -93,14 +93,14 @@ const handleTimerSet = (value: number, leaveEarly: boolean, isPark: boolean) => 
   currentStep.value = NavigatorStep.ParkTimer;
 
   const notifyInterval = leaveEarly ? 1 : 5;
-  const durationMs = value * (60 - notifyInterval) * 1000;
+  const durationSec = (value - notifyInterval) * 60;
   const type = isPark ? 'park' : 'yellowLine';
 
-  var newDateObj = new Date(Date.now() + durationMs);
+  var newDateObj = new Date(Date.now() + durationSec * 1000);
 
   useConnectionMessage(
     'timer_set',
-    JSON.stringify({ startTime: newDateObj, duration: durationMs / 1000 / 60, type: type })
+    JSON.stringify({ startTime: newDateObj, duration: durationSec, type: type })
   );
 };
 
