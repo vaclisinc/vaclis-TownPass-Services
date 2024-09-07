@@ -7,15 +7,15 @@ const props = defineProps<{
     price: string | null;
     distance: number | null;
     address: string | null;
-    show: boolean;
     timePassed: number | null;
     maxTime: number | null;
     leaveEarly: boolean | null;
-    display: 'navigator_park' | 'navigator_yellow_line' | 'park_confirm' | 'park_timer';
+    display: 'browsing_map' | 'navigator_park' | 'navigator_yellow_line' | 'navigating' | 'park_confirm' | 'park_timer';
 }>();
-const emit = defineEmits(['button-go', 'button-back', 'button-mark-parked', 'button-cancel-park', 'button-confirm-park', 'button-leave']);
+const emit = defineEmits(['button-go', 'button-back', 'button-mark-parked', 'button-cancel-park', 'button-cancel-navigating', 'button-confirm-park', 'button-leave']);
 const isNavigatorPark = computed(() => props.display === 'navigator_park');
 const isNavigatorYellowLine = computed(() => props.display === 'navigator_yellow_line');
+const isNavigating = computed(() => props.display === 'navigating');
 const isParkConfirm = computed(() => props.display === 'park_confirm');
 const isParkTimer = computed(() => props.display === 'park_timer');
 const warningThreshold = computed(() => (props.leaveEarly ? 30 : 150));
@@ -42,7 +42,7 @@ const formattedTime = (time: number) => {
 };
 </script>
 <template>
-    <div class="goto-card flex flex-col absolute bottom-0 bg-white rounded-lg p-4 mb-8" :class="{ show: props.show }">
+    <div class="goto-card flex flex-col absolute bottom-0 bg-white rounded-lg p-4 mb-8" :class="{ show: props.display !== 'browsing_map' }">
         <!-- 停車場 -->
         <div v-if="isNavigatorPark" class="container">
             <h2 class="text-2xl w-full text-center p-2">
@@ -71,6 +71,13 @@ const formattedTime = (time: number) => {
                 <BaseButton outline class="button button-back" @click="$emit('button-back')">
                     返回
                 </BaseButton>
+            </div>
+        </div>
+        <!-- 導航中 -->
+        <div v-else-if="isNavigating" class="container">
+            <h2 class="text-2xl w-full text-center p-2">導航中</h2>
+            <div class="button-set">
+                <BaseButton outline class="button" @click="$emit('button-cancel-navigating')">取消導航</BaseButton>
             </div>
         </div>
         <!-- 停車確認 -->
