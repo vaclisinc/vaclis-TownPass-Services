@@ -67,10 +67,19 @@ const formattedTime = (time: number) => {
         <span>{{ props.parkName }}</span>
         <span class="text-base text-gray-500"> (尚有{{ props.remainingSpace }}格)</span>
       </div>
-      <div class="align-center text-center w-2x pt-2 pb-4">
-        <p>收費時段：{{ props.billingTime || '--' }}</p>
-        <p>收費：{{ props.price }}</p>
-        <p>距離：{{ props.distance }} 公尺</p>
+      <div class="text-center min-w-48 pt-2 pb-4 m-auto">
+        <div class="flex justify-between">
+          <p>收費時段：</p>
+          <p>{{ props.billingTime || '--' }}</p>
+        </div>
+        <div class="flex justify-between">
+          <p>收費：</p>
+          <p>{{ props.price }}</p>
+        </div>
+        <div class="flex justify-between">
+          <p>距離：</p>
+          <p>{{ props.distance }} 公尺</p>
+        </div>
       </div>
       <div class="button-set">
         <BaseButton class="button button-go" @click="$emit('button-go')">前往</BaseButton>
@@ -95,7 +104,7 @@ const formattedTime = (time: number) => {
     <!-- 導航中 -->
     <div v-else-if="isNavigating" class="container">
       <h2 class="text-2xl w-full text-center p-2">導航中</h2>
-      <div class="button-set">
+      <div class="button-set p-2">
         <BaseButton outline class="button" @click="$emit('button-cancel-navigating')"
           >取消導航</BaseButton
         >
