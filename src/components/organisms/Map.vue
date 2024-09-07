@@ -3,6 +3,8 @@
 </template>
 
 <script>
+import { useHandleConnectionData } from '../../composables/useHandleConnectionData';
+import { useConnectionMessage } from '../../composables/useConnectionMessage';
 import mapboxgl from 'mapbox-gl';
 import axios from 'axios';
 
@@ -22,99 +24,115 @@ export default {
       getParkingData();
     });
 
-    let updating = 0;
+    map.addControl(new mapboxgl.GeolocateControl({ geolocation: { getCurrentPosition } }));
+
+    let successCallback = null;
+
+    function getCurrentPosition(success, error, options) {
+      console.log('Get location');
+      successCallback = success;
+      useConnectionMessage('location', null);
+    }
+
+    useHandleConnectionData((i) => {
+      i = JSON.parse(i.data);
+      let name = i.name;
+      let data = i.data;
+
+      // new mapboxgl.Popup({ closeOnClick: false })
+      //   .setLngLat(map.getCenter())
+      //   .setHTML('<h1>'+JSON.stringify(data)+'</h1>')
+      //   .addTo(map);
+
+      successCallback({ coords: data });
+      successCallback = null;
+    });
+
+    let updating = false;
     const markers = [];
 
     getParkingData();
 
-    function getParkingData() {
-      if (updating > 0) return;
-      updating = 2;
-      markers.forEach(i=>i.remove());
+    async function getParkingData() {
+      if (updating) return;
+      updating = true;
 
       let center = map.getCenter();
-      let lon = center.lng, lat = center.lat;
-      axios
-        .get(
-          // `https://127.0.0.1:25569?lon=${lon}&lat=${lat}`
-          `https://api.wavjaby.nckuctf.org:25569?lon=${lon}&lat=${lat}`
-        )
-        .then((i) => i.data)
-        .then((i) => {
-          console.log(i);
-          addPoints(
-            'parkingLot',
-            i.parkingLot.map((i) => ({
-              type: 'Feature',
-              properties: {
-                color: '#ff0000'
-              },
-              geometry: {
-                type: 'Point',
-                coordinates: [i.lon, i.lat]
-              }
-            })),
-            1,
-            3
-          );
-          addPolygon(
-            'parkingGrid',
-            i.parkingGrid.map((i) => ({
-              type: 'Feature',
-              properties: {
-                color: i.available ? '#81b29a' : '#e07a5f'
-              },
-              geometry: {
-                type: 'Polygon',
-                coordinates: [i.wkt]
-              }
-            })),
-            1
-          );
-          // add markers to map
-          i.parkingGrid.forEach(
-            (i) => i.available && makeMarker('1', '#26a7ac', 25, [i.lon, i.lat])
-          );
-          i.parkingLot
-            .sort((a, b) => a.carRemainderNum - b.carRemainderNum)
-            .forEach((i) =>
-              makeMarker(
-                i.carRemainderNum,
-                i.carRemainderNum > 0 ? '#693' : '#f20',
-                i.carRemainderNum === 0 ? 20 : Math.min(50 * (i.carRemainderNum / 1000) + 25, 60),
-                [i.lon, i.lat]
-              )
-            );
-          updating--;
-        });
-      axios
-        .get(`https://api.wavjaby.nckuctf.org:25569/get_line?lon=${lon}&lat=${lat}`)
-        .then((i) => i.data)
-        .then((i) => {
-          console.log(i);
-          let featuresPath = i.map((i) => ({
-            type: 'Feature',
-            properties: {
-              color: '#ffff00'
-            },
-            geometry: {
-              type: 'LineString',
-              coordinates: i.coordinates
-            }
-          }));
-          addSourceAndLayer('yellowLine', featuresPath, {
-            type: 'line',
-            layout: {
-              'line-join': 'round',
-              'line-cap': 'round'
-            },
-            paint: {
-              'line-color': ['get', 'color'],
-              'line-width': 4
-            }
-          });
-          updating--;
-        });
+      let lon = center.lng,
+        lat = center.lat;
+      let d0 = axios.get(`https://api.wavjaby.nckuctf.org:25569?lon=${lon}&lat=${lat}`);
+      let d1 = axios.get(`https://api.wavjaby.nckuctf.org:25569/get_line?lon=${lon}&lat=${lat}`);
+
+      d0 = await (await d0).data;
+      d1 = await (await d1).data;
+      updating = false;
+
+      markers.forEach((i) => i.remove());
+
+      console.log(d0);
+      addPoints(
+        'parkingLot',
+        d0.parkingLot.map((i) => ({
+          type: 'Feature',
+          properties: {
+            color: '#ff0000'
+          },
+          geometry: {
+            type: 'Point',
+            coordinates: [i.lon, i.lat]
+          }
+        })),
+        1,
+        3
+      );
+      addPolygon(
+        'parkingGrid',
+        d0.parkingGrid.map((i) => ({
+          type: 'Feature',
+          properties: {
+            color: i.available ? '#81b29a' : '#e07a5f'
+          },
+          geometry: {
+            type: 'Polygon',
+            coordinates: [i.wkt]
+          }
+        })),
+        1
+      );
+      // add markers to map
+      d0.parkingGrid.forEach((i) => i.available && makeMarker('1', '#26a7ac', 25, [i.lon, i.lat]));
+      d0.parkingLot
+        .sort((a, b) => a.carRemainderNum - b.carRemainderNum)
+        .forEach((i) =>
+          makeMarker(
+            i.carRemainderNum,
+            i.carRemainderNum > 0 ? '#693' : '#f20',
+            i.carRemainderNum === 0 ? 20 : Math.min(50 * (i.carRemainderNum / 1000) + 25, 60),
+            [i.lon, i.lat]
+          )
+        );
+      console.log(d1);
+      let featuresPath = d1.map((i) => ({
+        type: 'Feature',
+        properties: {
+          color: '#ffff00'
+        },
+        geometry: {
+          type: 'LineString',
+          coordinates: i.coordinates
+        }
+      }));
+      addSourceAndLayer('yellowLine', featuresPath, {
+        type: 'line',
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': 4
+        }
+      });
     }
 
     function makeMarker(text, color, size, cord) {

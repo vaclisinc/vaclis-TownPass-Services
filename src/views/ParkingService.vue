@@ -4,8 +4,6 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import NavigatorCard from '@/components/organisms/NavigatorCard.vue';
 import { ref } from 'vue';
 import { computed, onMounted } from 'vue';
-import { useHandleConnectionData } from '../composables/useHandleConnectionData';
-import { useConnectionMessage } from '../composables/useConnectionMessage';
 
 export type ParkPoint = {
     name: string;
@@ -105,15 +103,6 @@ const cancelParkHandler = ref(handleCancelPark);
 const leaveHandler = ref(handleLeave);
 const pointClickHandler = ref(handleMapClick);
 const isShowNavigatorCard = computed(() => currentSelectedPark.value !== null);
-
-onMounted(() => {
-  console.log('Get location');
-  useConnectionMessage('location', null);
-
-  useHandleConnectionData((i) => {
-    console.log(i);
-  });
-});
 
 // Usage: <Map @point-click="pointClickHandler" />
 </script>
