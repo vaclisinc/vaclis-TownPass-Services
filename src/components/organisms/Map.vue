@@ -20,32 +20,62 @@ export default {
     }));
 
     map.on('moveend', (e) => {
-      console.log('move end:', e.type);
+      console.log('move end:', e);
       getParkingData();
     });
 
-    map.addControl(new mapboxgl.GeolocateControl({ geolocation: { getCurrentPosition } }));
+    let getCurrentPosCallback = null;
+    let watchPositionId = 0;
+    const watchPositionListeners = {};
 
-    let successCallback = null;
+    map.addControl(
+      new mapboxgl.GeolocateControl({
+        geolocation: { getCurrentPosition, watchPosition, clearWatch },
+        trackUserLocation: true
+      })
+    );
 
     function getCurrentPosition(success, error, options) {
       console.log('Get location');
-      successCallback = success;
+      getCurrentPosCallback = success;
       useConnectionMessage('location', null);
+    }
+
+    function watchPosition(success, error, options) {
+      // new mapboxgl.Popup({ closeOnClick: false })
+      //   .setLngLat(map.getCenter())
+      //   .setHTML('<h1>' + 'stratWatch' + '</h1>')
+      //   .addTo(map);
+
+      const id = ++watchPositionId;
+      const interval = setInterval(() => {
+        useConnectionMessage('location', null);
+      }, 5000);
+      watchPositionListeners[id] = { success, interval };
+      return id;
+    }
+
+    function clearWatch(id) {
+      // new mapboxgl.Popup({ closeOnClick: false })
+      //   .setLngLat(map.getCenter())
+      //   .setHTML('<h1>' + 'clearWatch' + '</h1>')
+      //   .addTo(map);
+      const listener = watchPositionListeners[id];
+      clearInterval(listener.interval);
+      delete watchPositionListeners[id];
     }
 
     useHandleConnectionData((i) => {
       i = JSON.parse(i.data);
-      let name = i.name;
-      let data = i.data;
+      const name = i.name;
+      const data = i.data;
+      const geoPos = { coords: data };
 
-      // new mapboxgl.Popup({ closeOnClick: false })
-      //   .setLngLat(map.getCenter())
-      //   .setHTML('<h1>'+JSON.stringify(data)+'</h1>')
-      //   .addTo(map);
-
-      successCallback({ coords: data });
-      successCallback = null;
+      if (getCurrentPosCallback) {
+        getCurrentPosCallback(geoPos);
+        getCurrentPosCallback = null;
+      }
+      Object.values(watchPositionListeners).forEach(i=>i.success(geoPos));
     });
 
     let updating = false;
@@ -145,8 +175,12 @@ export default {
       sp.style.width = sp.style.height = size + 'px';
       el.append(sp);
 
-      // make a marker for each feature and add it to the map
-      markers.push(new mapboxgl.Marker(el).setLngLat(cord).addTo(map));
+      const marker = new mapboxgl.Marker(el).setLngLat(cord).addTo(map);
+      marker.getElement().addEventListener('click', () => {
+        // $emit('point-click', )
+      });
+      markers.push(marker);
+      return marker;
     }
 
     function addSourceAndLayer(id, features, layerConfig) {
