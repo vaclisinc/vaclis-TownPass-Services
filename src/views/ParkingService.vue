@@ -36,7 +36,7 @@ const currentSelectedPark = ref<ParkPoint | null>({
 });
 
 const parkTimer = ref(0); // 單位：分鐘
-const currentStep = ref<NavigatorStep>(NavigatorStep.ParkSetTimer);
+const currentStep = ref<NavigatorStep>(NavigatorStep.ParkConfirm);
 const handleMapClick = (point: ParkPoint) => {
     currentSelectedPark.value = point;
 };
@@ -67,7 +67,6 @@ const handleConfirmPark = () => {
     // if 7am to 7:57pm, set park timer to 3
     // else jump to park timer setting
     const now = new Date();
-    now.setHours(18);
     if (now.getHours() >= 7 && now.getHours() < 19 || now.getHours() === 19 && now.getMinutes() < 57) {
         parkTimer.value = 3;
         currentStep.value = NavigatorStep.ParkTimer;
