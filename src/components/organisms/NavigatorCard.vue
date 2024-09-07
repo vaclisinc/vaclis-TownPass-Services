@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import BaseButton from '@/components/atoms/BaseButton.vue';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import BaseInput from '../atoms/BaseInput.vue';
 const props = defineProps<{
     parkName: string | null;
     remainingSpace: number | null;
     price: string | null;
     distance: number | null;
-    timePassed: number | null;
+    timePassed: number | null;  // 單位：秒
     maxTime: number | null;
     leaveEarly: boolean | null;
     billingTime: string | null;
@@ -45,6 +45,15 @@ const pricePerHour = computed(() => parseFloat(props.price.replace('元/小時',
 
 const parkTimer = ref(0);
 const parkMemo = ref('');
+const parkCountup = ref(props.timePassed || 0);
+const counterHandler = ref(0);
+watch(() => props.display, (newVal: string) => {
+    if (newVal === 'park_timer' && counterHandler.value === 0) {
+        counterHandler.value = setInterval(() => {
+            parkCountup.value += 1;
+        }, 1000);
+    }
+});
 
 const setParkTimer = (value: number) => {
     parkTimer.value = Math.max(0, value);
@@ -156,12 +165,12 @@ const formattedTime = (time: number) => {
             <h2 class="text-2xl w-full p-2 text-center">停車計時</h2>
             <div class="flex justify-center">
                 <span :class="timerTextColor" class="text-xl font-bold pb-1">
-                    {{ formattedTime(props.timePassed) }}
+                    {{ formattedTime(Math.floor(parkCountup / 60)) /* 傳分鐘進去 */ }}
                 </span>
                 <span class="text-grey-500 text-xl font-bold">/{{ formattedTime(props.maxTime) }}</span>
             </div>
             <div class="text-center pb-2">
-                <span class="text-lg text-center">已累計金額：{{ pricePerHour * (props.timePassed / 3600) }}元</span>
+                <span class="text-lg text-center">已累計金額：{{ pricePerHour * (Math.ceil(parkCountup / 3600)) }}元</span>
             </div>
             <div class="button-set">
                 <BaseButton class="button button-go" @click="$emit('button-leave')">離開</BaseButton>
