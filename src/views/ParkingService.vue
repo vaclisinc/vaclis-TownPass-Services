@@ -21,6 +21,7 @@ enum NavigatorStep {
   NavigatorYellowLine = 'navigator_yellow_line', // 查看黃線
   Navigating = 'navigating', // 導航中
   ParkConfirm = 'park_confirm', // 確認停車
+  ParkSetTimer = 'park_set_timer', // 設定停車計時
   ParkTimer = 'park_timer' // 停車計時
 }
 
@@ -33,7 +34,7 @@ const currentSelectedPark = ref<ParkPoint | null>({
   distance: 20,
   type: 'park'
 });
-const currentStep = ref<NavigatorStep>(NavigatorStep.NavigatorPark);
+const currentStep = ref<NavigatorStep>(NavigatorStep.ParkSetTimer);
 const handleMapClick = (point: ParkPoint) => {
   currentSelectedPark.value = point;
 };
