@@ -34,7 +34,7 @@ const currentSelectedPark = ref<ParkPoint | null>({
   remainingSpace: 48763,
   price: '40 元/小時',
   distance: 20,
-  type: 'yellow_line'
+  type: 'park'
 });
 
 const parkTimer = ref(0); // 單位：半小時
@@ -88,7 +88,7 @@ const handleMarkParked = () => {
   // TODO: back to the map, send the parking information to the server
 };
 
-const handleTimerSet = (value: number, leaveEarly: boolean, isPark: boolean) => {
+const handleTimerSet = (value: number, leaveEarly: boolean, isPark: boolean, place: string) => {
   parkTimer.value = Math.max(0, value);
   currentStep.value = NavigatorStep.ParkTimer;
 
@@ -104,7 +104,8 @@ const handleTimerSet = (value: number, leaveEarly: boolean, isPark: boolean) => 
       startTime: newDateObj,
       duration: durationSec,
       type: type,
-      remainTime: notifyInterval * 60
+      remainTime: notifyInterval * 60,
+      place: place
     })
   );
 };
