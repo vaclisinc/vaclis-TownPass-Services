@@ -42,6 +42,6 @@ const isShowNavigatorCard = computed(() => currentSelectedPark.value !== null);
         <div class="flex flex-1">
             <Map @point-click="pointClickHandler" />
         </div>
-        <NavigatorCard v-show="isShowNavigatorCard" :parkName="currentSelectedPark?.name || ''" :remainingSpace="currentSelectedPark?.remainingSpace ?? 0" :price="currentSelectedPark?.price ?? ''" :distance="currentSelectedPark?.distance ?? 0" :display="currentSelectedPark?.display || 'navigator_park'" show />
+        <NavigatorCard v-show="isShowNavigatorCard" :parkName="currentSelectedPark?.name" :remainingSpace="currentSelectedPark?.remainingSpace" :price="currentSelectedPark?.price" :distance="currentSelectedPark?.distance" :display="currentSelectedPark?.display || 'navigator_park'" show />
     </div>
 </template>
