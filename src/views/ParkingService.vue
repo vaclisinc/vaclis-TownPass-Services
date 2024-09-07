@@ -3,7 +3,7 @@ import Map from '@/components/organisms/Map.vue';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import NavigatorCard from '@/components/organisms/NavigatorCard.vue';
 import { ref } from 'vue';
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 
 export type ParkPoint = {
     name: string;
