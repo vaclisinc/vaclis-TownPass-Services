@@ -21,6 +21,7 @@ enum NavigatorStep {
     NavigatorYellowLine = 'navigator_yellow_line', // 查看黃線
     Navigating = 'navigating', // 導航中
     ParkConfirm = 'park_confirm', // 確認停車
+    ParkLocationMemo = 'park_location_memo', // 停車地點備註
     ParkSetTimer = 'park_set_timer', // 設定停車計時
     ParkTimer = 'park_timer' // 停車計時
 }
@@ -36,6 +37,7 @@ const currentSelectedPark = ref<ParkPoint | null>({
 });
 
 const parkTimer = ref(0);   // 單位：半小時
+const parkMemo = ref('');   // 停車地點備註
 const currentStep = ref<NavigatorStep>(NavigatorStep.ParkConfirm);
 const handleMapClick = (point: ParkPoint) => {
     currentSelectedPark.value = point;
@@ -67,12 +69,11 @@ const handleConfirmPark = () => {
     // if 7am to 7:57pm, set park timer to 3
     // else jump to park timer setting
     const now = new Date();
-    now.setHours(18);
-    if(now.getHours() >= 7 && now.getHours() < 19 || now.getHours() === 19 && now.getMinutes() < 57) {
+    if(currentSelectedPark.value?.type == "yellow_line" && now.getHours() >= 7 && now.getHours() < 19 || now.getHours() === 19 && now.getMinutes() < 57) {
         parkTimer.value = 3;
         currentStep.value = NavigatorStep.ParkTimer;
     } else {
-        currentStep.value = NavigatorStep.ParkSetTimer;
+        currentStep.value = NavigatorStep.ParkLocationMemo;
     }
 };
 
@@ -84,6 +85,11 @@ const handleMarkParked = () => {
 const handleTimerSet = (value: number) => {
     parkTimer.value = Math.max(0, value);
     currentStep.value = NavigatorStep.ParkTimer;
+};
+
+const handleMemoSet = (value: string) => {
+    parkMemo.value = value;
+    currentStep.value = NavigatorStep.ParkSetTimer;
 };
 
 // 取消停車
@@ -108,6 +114,7 @@ const cancelNavigatingHandler = ref(handleCancelNavigating);
 const confirmParkHandler = ref(handleConfirmPark);
 const markParkedHandler = ref(handleMarkParked);
 const timerSetHandler = ref(handleTimerSet);
+const memoSetHandler = ref(handleMemoSet);
 const cancelParkHandler = ref(handleCancelPark);
 const leaveHandler = ref(handleLeave);
 const pointClickHandler = ref(handleMapClick);
@@ -126,6 +133,7 @@ const isShowNavigatorCard = computed(() => currentSelectedPark.value !== null);
             :leaveEarly="true" :billingTime="null" @button-back="backClickHandler" @button-go="goClickHandler"
             @button-cancel-navigating="cancelNavigatingHandler" @button-confirm-park="confirmParkHandler"
             @button-cancel-park="cancelParkHandler" @button-leave="leaveHandler"
-            @button-mark-parked="markParkedHandler" @button-set-timer="timerSetHandler" />
+            @button-mark-parked="markParkedHandler" @button-set-timer="timerSetHandler"
+            @button-set-memo="memoSetHandler" />
     </div>
 </template>

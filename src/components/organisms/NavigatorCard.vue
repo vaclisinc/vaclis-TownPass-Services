@@ -17,6 +17,7 @@ const props = defineProps<{
     | 'navigator_yellow_line'
     | 'navigating'
     | 'park_confirm'
+    | 'park_location_memo'
     | 'park_set_timer'
     | 'park_timer';
 }>();
@@ -26,6 +27,7 @@ const emit = defineEmits([
     'button-mark-parked',
     'button-cancel-park',
     'button-cancel-navigating',
+    'button-set-memo',
     'button-set-timer',
     'button-confirm-park',
     'button-leave'
@@ -34,12 +36,14 @@ const isNavigatorPark = computed(() => props.display === 'navigator_park');
 const isNavigatorYellowLine = computed(() => props.display === 'navigator_yellow_line');
 const isNavigating = computed(() => props.display === 'navigating');
 const isParkConfirm = computed(() => props.display === 'park_confirm');
+const isParkLocationMemo = computed(() => props.display === 'park_location_memo');
 const isParkSetTimer = computed(() => props.display === 'park_set_timer');
 const isParkTimer = computed(() => props.display === 'park_timer');
 const warningThreshold = computed(() => (props.leaveEarly ? 30 : 150));
 const pricePerHour = computed(() => parseFloat(props.price.replace('元/小時', '')));
 
 const parkTimer = ref(0);
+const parkMemo = ref('');
 
 const setParkTimer = (value: number) => {
     parkTimer.value = Math.max(0, value);
@@ -116,6 +120,15 @@ const formattedTime = (time: number) => {
                 <BaseButton outline class="button button-back" @click="$emit('button-cancel-park')">取消</BaseButton>
             </div>
         </div>
+        <!-- 停車位置備註 -->
+        <div v-else-if="isParkLocationMemo" class="container">
+            <h2 class="text-2xl w-full p-2 text-center">停車位置備註</h2>
+            <BaseInput v-model="parkMemo" class="memo-input" placeholder="ex. 車位號碼如 A123 等" />
+            <div class="button-set">
+                <BaseButton class="button" @click="$emit('button-set-memo', parkMemo)">確認</BaseButton>
+                <BaseButton outline class="button" @click="$emit('button-set-memo', '')">跳過</BaseButton>
+            </div>
+        </div>
         <!-- 設定停車計時 -->
         <div v-else-if="isParkSetTimer" class="container">
             <h2 class="text-2xl w-full p-2 text-center">設定停車計時</h2>
@@ -167,6 +180,11 @@ const formattedTime = (time: number) => {
 .container {
     @apply flex;
     @apply flex-col;
+}
+
+.memo-input {
+    @apply mx-2;
+    @apply my-4;
 }
 
 .input-set {
