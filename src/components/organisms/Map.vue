@@ -37,8 +37,8 @@ export default {
       lat = 25.0325917;
     axios
       .get(
-        // 'https://api.wavjaby.nckuctf.org:25569'
-        `http://127.0.0.1:8000?lon=${lon}&lat=${lat}`
+        // `https://127.0.0.1:25569?lon=${lon}&lat=${lat}`
+        `https://api.wavjaby.nckuctf.org:25569?lon=${lon}&lat=${lat}`
       )
       .then((i) => i.data)
       .then((i) => {
