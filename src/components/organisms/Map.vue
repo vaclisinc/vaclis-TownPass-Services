@@ -56,6 +56,18 @@ export default {
           })),
           1
         );
+        // add markers to map
+        i.parkingGrid.forEach((i) => i.available && makeMarker('1', '#26a7ac', 25, [i.lon, i.lat]));
+        i.parkingLot
+          .sort((a, b) => a.carRemainderNum - b.carRemainderNum)
+          .forEach((i) =>
+            makeMarker(
+              i.carRemainderNum,
+              i.carRemainderNum > 0 ? '#693' : '#f20',
+              i.carRemainderNum === 0 ? 20 : Math.min(50 * (i.carRemainderNum / 1000) + 25, 60),
+              [i.lon, i.lat]
+            )
+          );
       });
     axios
       .get(`https://api.wavjaby.nckuctf.org:25569/get_line?lon=${lon}&lat=${lat}`)
@@ -80,12 +92,26 @@ export default {
           },
           paint: {
             'line-color': ['get', 'color'],
-            'line-width': 5
+            'line-width': 4
           }
         });
       });
 
     this.map = map;
+
+    function makeMarker(text, color, size, cord) {
+      let el = document.createElement('div');
+      el.className = 'marker';
+      // Set text and size
+      let sp = document.createElement('span');
+      sp.innerHTML = '<b>' + text + '</b>';
+      sp.style.background = color;
+      sp.style.width = sp.style.height = size + 'px';
+      el.append(sp);
+
+      // make a marker for each feature and add it to the map
+      new mapboxgl.Marker(el).setLngLat(cord).addTo(map);
+    }
 
     function addSourceAndLayer(id, features, layerConfig) {
       const srcId = id + '_src';
@@ -133,5 +159,29 @@ export default {
 <style>
 .map-container {
   flex: 1;
+}
+
+.marker {
+  width: 0;
+  height: 0;
+  font-size: 16px;
+}
+
+.marker > span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  color: #fff;
+  border: solid 1px;
+  border-radius: 0 70% 70%;
+  box-shadow: 0 0 2px #000;
+  cursor: pointer;
+  transform-origin: 0 0;
+  transform: rotateZ(-135deg);
+}
+
+.marker b {
+  transform: rotateZ(135deg);
 }
 </style>
