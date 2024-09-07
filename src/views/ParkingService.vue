@@ -13,7 +13,14 @@ export type ParkPoint = {
     remainingSpace: number;
     price: string;
     distance: number;
-    display: "navigator_park" | "navigator_yellow_line" | "park_confirm" | "park_timer";
+    type: 'park' | 'yellow_line';
+};
+
+enum NavigatorStep {
+    NavigatorPark = 'navigator_park',
+    NavigatorYellowLine = 'navigator_yellow_line',
+    ParkConfirm = 'park_confirm',
+    ParkTimer = 'park_timer',
 };
 
 const currentSelectedPark = ref<ParkPoint | null>({
@@ -24,9 +31,9 @@ const currentSelectedPark = ref<ParkPoint | null>({
     remainingSpace: 48763,
     price: '40圓/小時',
     distance: 20,
-    display: 'navigator_park'
+    type: 'park'
 });
-
+const currentStep = ref<NavigatorStep>(NavigatorStep.NavigatorYellowLine);
 const handleClick = (point: ParkPoint) => {
     currentSelectedPark.value = point;
 };
@@ -48,7 +55,7 @@ const isShowNavigatorCard = computed(() => currentSelectedPark.value !== null);
             :price="currentSelectedPark?.price ?? null"
             :distance="currentSelectedPark?.distance ?? null"
             :address="currentSelectedPark?.address ?? null"
-            :display="currentSelectedPark?.display || 'navigator_park'"
+            :display="currentStep"
             :timePassed="null"
             :maxTime="null"
             :leaveEarly="true"
