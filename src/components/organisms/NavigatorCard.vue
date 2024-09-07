@@ -1,51 +1,166 @@
 <script setup lang="ts">
 import BaseButton from '@/components/atoms/BaseButton.vue';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import BaseInput from '../atoms/BaseInput.vue';
 const props = defineProps<{
-    parkName: string;
-    remainingSpace: number;
-    price: string;
-    distance: number;
-    address: string;
-    show: boolean;
-    display: "navigator_park" | "navigator_yellow_line" | "park_already" | "park_timer";
+    parkName: string | null;
+    remainingSpace: number | null;
+    price: string | null;
+    distance: number | null;
+    timePassed: number | null;
+    maxTime: number | null;
+    leaveEarly: boolean | null;
+    billingTime: string | null;
+    display:
+    | 'browsing_map'
+    | 'navigator_park'
+    | 'navigator_yellow_line'
+    | 'navigating'
+    | 'park_confirm'
+    | 'park_set_timer'
+    | 'park_timer';
 }>();
-const emit = defineEmits(['button-go', 'button-back']);
+const emit = defineEmits([
+    'button-go',
+    'button-back',
+    'button-mark-parked',
+    'button-cancel-park',
+    'button-cancel-navigating',
+    'button-set-timer',
+    'button-skip-timer',
+    'button-confirm-park',
+    'button-leave'
+]);
 const isNavigatorPark = computed(() => props.display === 'navigator_park');
 const isNavigatorYellowLine = computed(() => props.display === 'navigator_yellow_line');
-const isParkAlready = computed(() => props.display === 'park_already');
+const isNavigating = computed(() => props.display === 'navigating');
+const isParkConfirm = computed(() => props.display === 'park_confirm');
+const isParkSetTimer = computed(() => props.display === 'park_set_timer');
 const isParkTimer = computed(() => props.display === 'park_timer');
+const warningThreshold = computed(() => (props.leaveEarly ? 30 : 150));
+const pricePerHour = computed(() => parseFloat(props.price.replace('元/小時', '')));
+
+const parkTimer = ref(0);
+
+const setParkTimer = (value: number) => {
+    parkTimer.value = Math.max(0, value);
+};
+
+const timerTextColor = computed(() => {
+    if (props.timePassed === null || props.maxTime === null) {
+        return 'text-grey-500';
+    }
+    const timeLeft = props.maxTime - props.timePassed;
+    if (timeLeft < 0) {
+        return 'text-warn-100';
+    } else if (timeLeft < warningThreshold.value) {
+        return 'text-orange-500';
+    } else {
+        return 'text-primary-500';
+    }
+});
+
+const formattedTime = (time: number) => {
+    const hours = Math.floor(time / 3600);
+    const minutes = Math.floor(time / 60);
+    const remainingSeconds = time % 60;
+    return `${hours < 10 ? '0' + hours : hours}:${minutes < 10 ? '0' + minutes : minutes}:${remainingSeconds < 10 ? '0' + remainingSeconds : remainingSeconds}`;
+};
 </script>
 <template>
-    <div class="goto-card flex flex-col absolute bottom-0 bg-white rounded-lg p-4 mb-8" :class="{show: props.show}">
+    <div class="goto-card flex flex-col absolute bottom-0 bg-white rounded-lg p-4 mb-8"
+        :class="{ show: props.display !== 'browsing_map' }">
+        <!-- 停車場 -->
         <div v-if="isNavigatorPark" class="container">
-            <h2 class="text-2xl w-full">{{ props.parkName }}({{ props.remainingSpace }})</h2>
-            <div>
-                {{ props.price }}<br />
-                {{ props.distance }}公尺
+            <div class="text-2xl w-full text-center p-2">
+                <span>{{ props.parkName }}</span>
+                <span class="text-base text-gray-500"> (尚有{{ props.remainingSpace }}格)</span>
+            </div>
+            <div class="text-center min-w-48 pt-2 pb-4 m-auto">
+                <div class="flex justify-between">
+                    <p>收費時段：</p>
+                    <p>{{ props.billingTime || '--' }}</p>
+                </div>
+                <div class="flex justify-between">
+                    <p>收費：</p>
+                    <p>{{ props.price }}</p>
+                </div>
+                <div class="flex justify-between">
+                    <p>距離：</p>
+                    <p>{{ props.distance }} 公尺</p>
+                </div>
             </div>
             <div class="button-set">
-                <BaseButton class="button-go" @click="$emit('button-go')">過去</BaseButton>
-                <BaseButton outline class="button-back" @click="$emit('button-back')">返回</BaseButton>
+                <BaseButton class="button button-go" @click="$emit('button-go')">前往</BaseButton>
+                <BaseButton outline class="button button-back" @click="$emit('button-back')">
+                    取消
+                </BaseButton>
             </div>
         </div>
         <!-- 黃線停車 -->
         <div v-else-if="isNavigatorYellowLine" class="container">
-            <h2 class="text-2xl w-full">黃線停車</h2>
-            <div>
-                {{ props.address }}<br />
-                {{ props.distance }}公尺
+            <h2 class="text-2xl w-full text-center p-2">黃線</h2>
+            <div class="align-center text-center w-2x pt-2 pb-4">
+                <p>距離：{{ props.distance }}公尺</p>
             </div>
             <div class="button-set">
-                <BaseButton class="button button-go" @click="$emit('button-go')">過去</BaseButton>
-                <BaseButton outline class="button button-back" @click="$emit('button-back')">返回</BaseButton>
+                <BaseButton class="button button-go" @click="$emit('button-go')">前往</BaseButton>
+                <BaseButton outline class="button button-back" @click="$emit('button-back')">
+                    返回
+                </BaseButton>
+            </div>
+        </div>
+        <!-- 導航中 -->
+        <div v-else-if="isNavigating" class="container">
+            <h2 class="text-2xl w-full text-center p-2">導航中</h2>
+            <div class="button-set p-2">
+                <BaseButton outline class="button" @click="$emit('button-cancel-navigating')">取消導航</BaseButton>
+            </div>
+        </div>
+        <!-- 停車確認 -->
+        <div v-else-if="isParkConfirm" class="container">
+            <h2 class="text-2xl w-full pb-6 pt-2 text-center">是否停好車了？</h2>
+            <div class="button-set">
+                <BaseButton class="button button-go" @click="$emit('button-confirm-park')">是</BaseButton>
+                <BaseButton class="button button-back" @click="$emit('button-mark-parked')">車位已有車</BaseButton>
+                <BaseButton outline class="button button-back" @click="$emit('button-cancel-park')">取消</BaseButton>
+            </div>
+        </div>
+        <!-- 設定停車計時 -->
+        <div v-else-if="isParkSetTimer" class="container">
+            <h2 class="text-2xl w-full p-2 text-center">設定停車計時</h2>
+            <div class="input-set">
+                <BaseButton @click="setParkTimer(parkTimer - 0.5)">-</BaseButton>
+                <span class="parking-timer-label">{{ parkTimer.toFixed(1) }} 小時</span>
+                <BaseButton @click="setParkTimer(parkTimer + 0.5)">+</BaseButton>
+            </div>
+            <div class="button-set">
+                <BaseButton class="button" @click="$emit('button-set-timer', parkTimer)">確認</BaseButton>
+                <BaseButton outline class="button" @click="$emit('button-set-timer', 0)">跳過</BaseButton>
+            </div>
+        </div>
+        <!-- 停車計時 -->
+        <div v-else-if="isParkTimer" class="container">
+            <h2 class="text-2xl w-full p-2 text-center">停車計時</h2>
+            <div class="flex justify-center">
+                <span :class="timerTextColor" class="text-xl font-bold pb-1">
+                    {{ formattedTime(props.timePassed) }}
+                </span>
+                <span class="text-grey-500 text-xl font-bold">/{{ formattedTime(props.maxTime) }}</span>
+            </div>
+            <div class="text-center pb-2">
+                <span class="text-lg text-center">已累計金額：{{ pricePerHour * (props.timePassed / 3600) }}元</span>
+            </div>
+            <div class="button-set">
+                <BaseButton class="button button-go" @click="$emit('button-leave')">離開</BaseButton>
+                <!-- <BaseButton class="button button-back" @click="$emit('button-back')">車位已停車</BaseButton> -->
+                <!-- <BaseButton outline class="button button-back" @click="$emit('button-go')">取消</BaseButton> -->
             </div>
         </div>
     </div>
 </template>
 <style lang="postcss">
-.goto-card
-{
+.goto-card {
     @apply flex;
     @apply flex-col;
     width: calc(100% - 32px);
@@ -54,23 +169,38 @@ const isParkTimer = computed(() => props.display === 'park_timer');
     left: 100%;
     transition: left 0.5s;
 }
-.goto-card.show
-{
+
+.goto-card.show {
     left: 0;
 }
-.container
-{
+
+.container {
     @apply flex;
     @apply flex-col;
 }
-.button-set
-{
+
+.input-set {
+    @apply flex;
+    @apply justify-center;
+    @apply w-full;
+    @apply items-center;
+    @apply gap-2;
+    @apply pb-4;
+}
+
+.input-set button {
+    width: 36px;
+    height: 36px;
+    padding: 8px;
+}
+
+.button-set {
     @apply flex;
     @apply justify-center;
     @apply w-full;
 }
-.button-set .button
-{
+
+.button-set .button {
     @apply mx-2;
     @apply flex-1;
     max-width: 200px;
