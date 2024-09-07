@@ -10,7 +10,7 @@ const props = defineProps<{
     timePassed: number | null;
     maxTime: number | null;
     leaveEarly: boolean | null;
-    billingTime: string | undefined;
+    billingTime: string | null;
     display:
     | 'browsing_map'
     | 'navigator_park'
@@ -27,7 +27,6 @@ const emit = defineEmits([
     'button-cancel-park',
     'button-cancel-navigating',
     'button-set-timer',
-    'button-skip-timer',
     'button-confirm-park',
     'button-leave'
 ]);
@@ -126,8 +125,8 @@ const formattedTime = (time: number) => {
                 <BaseButton @click="setParkTimer(parkTimer + 0.5)">+</BaseButton>
             </div>
             <div class="button-set">
-                <BaseButton class="button" @click="$emit('button-set-timer')">確認</BaseButton>
-                <BaseButton outline class="button" @click="$emit('button-skip-timer')">跳過</BaseButton>
+                <BaseButton class="button" @click="$emit('button-set-timer', parkTimer)">確認</BaseButton>
+                <BaseButton outline class="button" @click="$emit('button-set-timer', 0)">跳過</BaseButton>
             </div>
         </div>
         <!-- 停車計時 -->
