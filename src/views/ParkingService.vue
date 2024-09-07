@@ -100,7 +100,12 @@ const handleTimerSet = (value: number, leaveEarly: boolean, isPark: boolean) => 
 
   useConnectionMessage(
     'timer_set',
-    JSON.stringify({ startTime: newDateObj, duration: durationSec, type: type })
+    JSON.stringify({
+      startTime: newDateObj,
+      duration: durationSec,
+      type: type,
+      remainTime: notifyInterval * 60
+    })
   );
 };
 
