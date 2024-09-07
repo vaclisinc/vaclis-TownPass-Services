@@ -11,6 +11,7 @@ const props = defineProps<{
   timePassed: number | null;
   maxTime: number | null;
   leaveEarly: boolean | null;
+  billingTime: string | undefined;
   display: 'navigator_park' | 'navigator_yellow_line' | 'park_confirm' | 'park_timer';
 }>();
 const emit = defineEmits(['button-go', 'button-back']);
@@ -47,12 +48,14 @@ const formattedTime = (time: number) => {
     :class="{ show: props.show }"
   >
     <div v-if="isNavigatorPark" class="container">
-      <h2 class="text-2xl w-full text-center p-2">
-        {{ props.parkName }}({{ props.remainingSpace }})
-      </h2>
-      <div class="p-4">
-        收費：{{ props.price }}<br />
-        距離：{{ props.distance }} 公尺
+      <div class="text-2xl w-full text-center p-2">
+        <span>{{ props.parkName }}</span>
+        <span class="text-base text-gray-500"> (尚有{{ props.remainingSpace }}格)</span>
+      </div>
+      <div class="align-center text-center w-2x pt-2 pb-4">
+        <p>收費時段：{{ props.billingTime || '--' }}</p>
+        <p>收費：{{ props.price }}</p>
+        <p>距離：{{ props.distance }} 公尺</p>
       </div>
       <div class="button-set">
         <BaseButton class="button button-go" @click="$emit('button-go')">前往</BaseButton>
