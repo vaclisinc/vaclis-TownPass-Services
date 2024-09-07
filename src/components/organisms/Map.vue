@@ -17,22 +17,6 @@ export default {
       zoom: 15
     });
 
-    // axios
-    //   .post(
-    //     'https://itaipeiparking.pma.gov.taipei/MapAPI/GetAllPOIData',
-    //     {
-    //       lon: 121.55574793722592,
-    //       lat: 25.036061711414888,
-    //       catagory: 'car',
-    //       type: 1
-    //     },
-    //     {
-    //       headers: {
-    //         'Content-Type': 'application/x-www-form-urlencoded'
-    //       }
-    //     }
-    //   )
-    //   .then((i) => console.log(i));
     let lon = 121.5624999,
       lat = 25.0325917;
     axios
@@ -72,6 +56,33 @@ export default {
           })),
           1
         );
+      });
+    axios
+      .get(`https://api.wavjaby.nckuctf.org:25569/get_line?lon=${lon}&lat=${lat}`)
+      .then((i) => i.data)
+      .then((i) => {
+        console.log(i);
+        let featuresPath = i.map((i) => ({
+          type: 'Feature',
+          properties: {
+            color: '#ffff00'
+          },
+          geometry: {
+            type: 'LineString',
+            coordinates: i.coordinates
+          }
+        }));
+        addSourceAndLayer('yellowLine', featuresPath, {
+          type: 'line',
+          layout: {
+            'line-join': 'round',
+            'line-cap': 'round'
+          },
+          paint: {
+            'line-color': ['get', 'color'],
+            'line-width': 5
+          }
+        });
       });
 
     this.map = map;
