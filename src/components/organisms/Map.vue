@@ -26,6 +26,23 @@ export default {
       getParkingData();
     });
 
+    map.on('click', 'yellowLine', function (e) {
+      // alert('click yellow line');
+      thisisthis.$emit('point-click', {
+        name: 'Yellow Line',
+        lat: e.lngLat.lat,
+        lng: e.lngLat.lng,
+        remainingSpace: 1,
+        price: '',
+        distance: 0,
+        type: 'yellowLine'
+      });
+      clearAllLayer();
+      zoomToFeat([userCoord, [e.lngLat.lng, e.lngLat.lat]]);
+    });
+
+    let userCoord = null;
+
     let getCurrentPosCallback = null;
     let watchPositionId = 0;
     const watchPositionListeners = {};
@@ -73,11 +90,12 @@ export default {
       const data = i.data;
       const geoPos = { coords: data };
 
+      userCoord = [data.longitude, data.latitude];
       if (getCurrentPosCallback) {
         getCurrentPosCallback(geoPos);
         getCurrentPosCallback = null;
       }
-      Object.values(watchPositionListeners).forEach(i=>i.success(geoPos));
+      Object.values(watchPositionListeners).forEach((i) => i.success(geoPos));
     });
 
     let updating = false;
@@ -132,15 +150,19 @@ export default {
         1
       );
       // add markers to map
-      d0.parkingGrid.forEach((i) => i.available && makeMarker('1', '#26a7ac', 25, [i.lon, i.lat], {
-        name: i.parkName,
-        lat: i.lat,
-        lng: i.lon,
-        remainingSpace: 1,
-        price: i.payex,
-        distance: 0,
-        type: 'park'
-      }));
+      d0.parkingGrid.forEach(
+        (i) =>
+          i.available &&
+          makeMarker('1', '#26a7ac', 25, [i.lon, i.lat], {
+            name: i.parkName,
+            lat: i.lat,
+            lng: i.lon,
+            remainingSpace: 1,
+            price: i.payex,
+            distance: 0,
+            type: 'park'
+          })
+      );
       d0.parkingLot
         .sort((a, b) => a.carRemainderNum - b.carRemainderNum)
         .forEach((i) =>
@@ -184,6 +206,33 @@ export default {
       });
     }
 
+    function clearAllLayer() {
+      removeSourceAndLayer('parkingLot');
+      removeSourceAndLayer('parkingGrid');
+      removeSourceAndLayer('yellowLine');
+      markers.forEach((i) => i.remove());
+    }
+
+    function zoomToFeat(coordinates) {
+      // based on this: https://www.mapbox.com/mapbox-gl-js/example/zoomto-linestring/
+
+      // Pass the first coordinates in the LineString to `lngLatBounds` &
+      // wrap each coordinate pair in `extend` to include them in the bounds
+      // result. A variation of this technique could be applied to zooming
+      // to the bounds of multiple Points or Polygon geomteries - it just
+      // requires wrapping all the coordinates with the extend method.
+      var bounds = coordinates.reduce(
+        function (bounds, coord) {
+          return bounds.extend(coord);
+        },
+        new mapboxgl.LngLatBounds(coordinates[0], coordinates[0])
+      );
+
+      map.fitBounds(bounds, {
+        padding: 20
+      });
+    }
+
     function makeMarker(text, color, size, cord, parkPoint) {
       let el = document.createElement('div');
       el.className = 'marker';
@@ -201,6 +250,12 @@ export default {
       });
       markers.push(marker);
       return marker;
+    }
+
+    function removeSourceAndLayer(id) {
+      const srcId = id + '_src';
+      if (map.getLayer(id)) map.removeLayer(id);
+      if (map.getSource(srcId)) map.removeSource(srcId);
     }
 
     function addSourceAndLayer(id, features, layerConfig) {
