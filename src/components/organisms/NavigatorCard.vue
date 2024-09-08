@@ -22,16 +22,16 @@ const props = defineProps<{
     | 'park_timer';
 }>();
 const emit = defineEmits([
-    'button-go',
-    'button-back',
-    'button-mark-parked',
-    'button-cancel-park',
-    'button-cancel-navigating',
-    'button-set-memo',
-    'button-set-timer',
-    'button-skip-timer',
-    'button-confirm-park',
-    'button-leave'
+  'button-go',
+  'button-back',
+  'button-mark-parked',
+  'button-cancel-park',
+  'button-cancel-navigating',
+  'button-set-memo',
+  'button-set-timer',
+  'button-skip-timer',
+  'button-confirm-park',
+  'button-leave'
 ]);
 const isNavigatorPark = computed(() => props.display === 'navigator_park');
 const isNavigatorYellowLine = computed(() => props.display === 'navigator_yellow_line');
@@ -59,27 +59,27 @@ watch(
 );
 
 const setParkTimer = (value: number) => {
-    parkTimer.value = Math.max(0, value);
+  parkTimer.value = Math.max(0, value);
 };
 
 const timerTextColor = computed(() => {
-    if (props.timePassed === null || props.maxTime === null) {
-        return 'text-grey-500';
-    }
-    const timeLeft = props.maxTime - props.timePassed;
-    if (timeLeft < 0) {
-        return 'text-warn-100';
-    } else if (timeLeft < warningThreshold.value) {
-        return 'text-orange-500';
-    } else {
-        return 'text-primary-500';
-    }
+  if (props.timePassed === null || props.maxTime === null) {
+    return 'text-grey-500';
+  }
+  const timeLeft = props.maxTime - props.timePassed;
+  if (timeLeft < 0) {
+    return 'text-warn-100';
+  } else if (timeLeft < warningThreshold.value) {
+    return 'text-orange-500';
+  } else {
+    return 'text-primary-500';
+  }
 });
 
 const formattedTime = (time: number) => {
-    const hours = Math.floor(time / 60);
-    const minutes = time % 60;
-    return `${hours}時${minutes}分`;
+  const hours = Math.floor(time / 60);
+  const minutes = time % 60;
+  return `${hours}時${minutes}分`;
 };
 </script>
 <template>
@@ -94,17 +94,17 @@ const formattedTime = (time: number) => {
         <span class="text-base text-gray-500"> (尚有{{ props.remainingSpace }}格)</span>
       </div>
       <div class="text-center min-w-48 pt-2 pb-4 m-auto">
-        <div class="flex justify-between">
+        <div class="flex-row max-w-48 justify-between">
           <p>收費時段：</p>
-          <p>{{ props.billingTime || '--' }}</p>
+          <p class="text-gray-500">{{ props.billingTime || '--' }}</p>
         </div>
-        <div class="flex justify-between">
+        <div class="flex-row max-w-48 justify-between">
           <p>收費：</p>
-          <p>{{ props.price }}</p>
+          <p class="text-gray-500">{{ props.price }}</p>
         </div>
-        <div class="flex justify-between">
+        <div class="flex-row max-w-48 justify-between">
           <p>距離：</p>
-          <p>{{ props.distance }} 公尺</p>
+          <p class="text-gray-500">{{ props.distance }} 公尺</p>
         </div>
       </div>
       <div class="button-set">
@@ -204,53 +204,53 @@ const formattedTime = (time: number) => {
 </template>
 <style lang="postcss">
 .goto-card {
-    @apply flex;
-    @apply flex-col;
-    width: calc(100% - 32px);
-    margin-left: 16px;
-    margin-right: 16px;
-    left: 100%;
-    transition: left 0.5s;
+  @apply flex;
+  @apply flex-col;
+  width: calc(100% - 32px);
+  margin-left: 16px;
+  margin-right: 16px;
+  left: 100%;
+  transition: left 0.5s;
 }
 
 .goto-card.show {
-    left: 0;
+  left: 0;
 }
 
 .container {
-    @apply flex;
-    @apply flex-col;
+  @apply flex;
+  @apply flex-col;
 }
 
 .memo-input {
-    @apply mx-2;
-    @apply my-4;
+  @apply mx-2;
+  @apply my-4;
 }
 
 .input-set {
-    @apply flex;
-    @apply justify-center;
-    @apply w-full;
-    @apply items-center;
-    @apply gap-2;
-    @apply pb-4;
+  @apply flex;
+  @apply justify-center;
+  @apply w-full;
+  @apply items-center;
+  @apply gap-2;
+  @apply pb-4;
 }
 
 .input-set button {
-    width: 36px;
-    height: 36px;
-    padding: 8px;
+  width: 36px;
+  height: 36px;
+  padding: 8px;
 }
 
 .button-set {
-    @apply flex;
-    @apply justify-center;
-    @apply w-full;
+  @apply flex;
+  @apply justify-center;
+  @apply w-full;
 }
 
 .button-set .button {
-    @apply mx-2;
-    @apply flex-1;
-    max-width: 200px;
+  @apply mx-2;
+  @apply flex-1;
+  max-width: 200px;
 }
 </style>
