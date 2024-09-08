@@ -103,17 +103,17 @@ const formattedTime = (time: number) => {
         <span class="text-base text-gray-500"> (尚有{{ props.remainingSpace }}格)</span>
       </div>
       <div class="text-center min-w-48 pt-2 pb-4 m-auto">
-        <div class="flex-row max-w-48 justify-between">
+        <!-- <div class="flex-row max-w-48 justify-between">
           <p>收費時段：</p>
           <p class="text-gray-500">{{ props.billingTime || '--' }}</p>
-        </div>
+        </div> -->
         <div class="flex-row max-w-48 justify-between">
           <p>收費：</p>
           <p class="text-gray-500">{{ props.price }}</p>
         </div>
         <div class="flex-row max-w-48 justify-between">
           <p>距離：</p>
-          <p class="text-gray-500">{{ props.distance.toFixed(2) }} 公里</p>
+          <p class="text-gray-500">{{ props.distance }} 公里</p>
         </div>
       </div>
       <div class="button-set">

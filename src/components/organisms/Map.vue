@@ -11,7 +11,7 @@ import axios from 'axios';
 
 let thisI;
 let map;
-let userCoord = null;
+let userCoord = [121.5624999, 25.0325917];
 const markers = [];
 
 mapboxgl.accessToken =
@@ -84,7 +84,8 @@ export default {
       const id = ++watchPositionId;
       const interval = setInterval(() => {
         useConnectionMessage('location', null);
-      }, 5000);
+      }, 4000);
+      useConnectionMessage('location', null);
       watchPositionListeners[id] = { success, interval };
       return id;
     }
@@ -154,7 +155,7 @@ export default {
         d0.parkingGrid.map((i) => ({
           type: 'Feature',
           properties: {
-            color: i.available ? '#81b29a' : '#e07a5f'
+            color: i.available ? '#ccff33' : '#e07a5f'
           },
           geometry: {
             type: 'Polygon',
@@ -183,7 +184,7 @@ export default {
       let featuresPath = d1.map((i) => ({
         type: 'Feature',
         properties: {
-          color: '#ffff00'
+          color: '#f0cf65'
         },
         geometry: {
           type: 'LineString',
@@ -255,10 +256,9 @@ function makeMarker(text, color, size, cord, remaining, info) {
       remainingSpace: remaining,
       price: info.payex,
       // distance: userCoord?calcCrow(info.lat, info.lon, userCoord[1], userCoord[0]):'--',
-      distance: 0,
+      distance: calcCrow(info.lat, info.lon, userCoord[1], userCoord[0]),
       type: 'park'
     });
-    console.log(parkPoint);
   });
   markers.push(marker);
   return marker;

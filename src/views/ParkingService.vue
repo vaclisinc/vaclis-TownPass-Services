@@ -119,7 +119,7 @@ const handleTimerSet = (value: number, leaveEarly: boolean, isPark: boolean, pla
     JSON.stringify({
       startTime: newDateObj,
       //   duration: durationSec,
-      duration: 5,
+      duration: 3,
       type: type,
       remainTime: notifyInterval * 60,
       place: place
