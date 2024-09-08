@@ -44,7 +44,13 @@ const isParkLocationMemo = computed(() => props.display === 'park_location_memo'
 const isParkSetTimer = computed(() => props.display === 'park_set_timer');
 const isParkTimer = computed(() => props.display === 'park_timer');
 const warningThreshold = computed(() => (props.leaveEarly ? 1 : 5));
-const pricePerHour = computed(() => parseFloat(props.price?.replace('元/小時', '') ?? '0'));
+const pricePerHour = computed(() => {
+    const tryPrice = parseFloat(props.price?.replace('元/', '') ?? '0');
+    if(isNaN(tryPrice)) {
+        return 0;
+    }
+    return tryPrice;
+});
 
 const parkTimer = ref(0);
 const parkMemo = ref('');
