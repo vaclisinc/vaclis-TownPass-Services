@@ -45,11 +45,11 @@ const isParkSetTimer = computed(() => props.display === 'park_set_timer');
 const isParkTimer = computed(() => props.display === 'park_timer');
 const warningThreshold = computed(() => (props.leaveEarly ? 1 : 5));
 const pricePerHour = computed(() => {
-    const tryPrice = parseFloat(props.price?.replace('元/', '') ?? '0');
-    if(isNaN(tryPrice)) {
-        return 0;
-    }
-    return tryPrice;
+  const tryPrice = parseFloat(props.price?.replace('元/', '') ?? '0');
+  if (isNaN(tryPrice)) {
+    return 0;
+  }
+  return tryPrice;
 });
 
 const parkTimer = ref(0);
@@ -132,7 +132,9 @@ const formattedTime = (time: number) => {
         <p>距離：{{ props.distance }}公里</p>
       </div>
       <div class="button-set">
-        <BaseButton class="button button-go" @click="$emit('button-go', props.pos)">前往</BaseButton>
+        <BaseButton class="button button-go" @click="$emit('button-go', props.pos)"
+          >前往</BaseButton
+        >
         <BaseButton outline class="button button-back" @click="$emit('button-back')">
           返回
         </BaseButton>
@@ -142,7 +144,9 @@ const formattedTime = (time: number) => {
     <div v-else-if="isNavigating" class="container">
       <h2 class="text-2xl w-full text-center p-2">導航中</h2>
       <div class="button-set p-2">
-        <BaseButton outline class="button" @click="$emit('button-cancel-navigating')">取消導航</BaseButton>
+        <BaseButton outline class="button" @click="$emit('button-cancel-navigating')"
+          >取消導航</BaseButton
+        >
         <BaseButton class="button" @click="$emit('button-demo-directly-arrive')">到達</BaseButton>
       </div>
     </div>
@@ -179,7 +183,7 @@ const formattedTime = (time: number) => {
       <div class="button-set">
         <BaseButton
           class="button"
-          @click="$emit('button-set-timer', parkTimer, false, false, props.parkName)"
+          @click="$emit('button-set-timer', parkTimer, false, true, props.parkName)"
           >確認</BaseButton
         >
         <BaseButton

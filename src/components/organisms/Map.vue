@@ -47,14 +47,14 @@ export default {
 
     map.on('click', 'yellowLine', function (e) {
       // alert('click yellow line');
-      thisisthis.$emit('point-click', {
+      thisI.$emit('point-click', {
         name: 'Yellow Line',
         lat: e.lngLat.lat,
         lng: e.lngLat.lng,
         remainingSpace: 1,
         price: '',
         distance: calcCrow(e.lngLat.lat, e.lngLat.lng, userCoord[1], userCoord[0]),
-        type: 'yellowLine'
+        type: 'yellow_line'
       });
     });
 
