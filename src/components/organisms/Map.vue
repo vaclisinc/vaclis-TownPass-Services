@@ -22,7 +22,7 @@ export default {
   watch: {
     destPos: {
       handler: function (val) {
-        if(!val) return;
+        if (!val) return;
         console.log('destPos:', val);
         clearAllLayer();
         zoomToFeat([userCoord, [val.lng, val.lat]]);
@@ -165,17 +165,7 @@ export default {
       );
       // add markers to map
       d0.parkingGrid.forEach(
-        (i) =>
-          i.available &&
-          makeMarker('1', '#26a7ac', 25, [i.lon, i.lat], {
-            name: i.parkName,
-            lat: i.lat,
-            lng: i.lon,
-            remainingSpace: 1,
-            price: i.payex,
-            distance: 0,
-            type: 'park'
-          })
+        (i) => i.available && makeMarker('1', '#26a7ac', 25, [i.lon, i.lat], 1, i)
       );
       d0.parkingLot
         .sort((a, b) => a.carRemainderNum - b.carRemainderNum)
@@ -185,15 +175,8 @@ export default {
             i.carRemainderNum > 0 ? '#693' : '#f20',
             i.carRemainderNum === 0 ? 20 : Math.min(50 * (i.carRemainderNum / 1000) + 25, 60),
             [i.lon, i.lat],
-            {
-              name: i.parkName,
-              lat: i.lat,
-              lng: i.lon,
-              remainingSpace: i.carRemainderNum,
-              price: i.payex,
-              distance: 0,
-              type: 'park'
-            }
+            i.carRemainderNum,
+            i
           )
         );
       console.log(d1);
@@ -253,7 +236,7 @@ function zoomToFeat(coordinates) {
   });
 }
 
-function makeMarker(text, color, size, cord, parkPoint) {
+function makeMarker(text, color, size, cord, remaining, info) {
   let el = document.createElement('div');
   el.className = 'marker';
   // Set text and size
@@ -265,7 +248,15 @@ function makeMarker(text, color, size, cord, parkPoint) {
 
   const marker = new mapboxgl.Marker(el).setLngLat(cord).addTo(map);
   marker.getElement().addEventListener('click', () => {
-    thisI.$emit('point-click', parkPoint);
+    thisI.$emit('point-click', {
+      name: info.parkName,
+      lat: info.lat,
+      lng: info.lon,
+      remainingSpace: remaining,
+      price: info.payex,
+      distance: calcCrow(info.lat, info.lon, userCoord[1], userCoord[0]),
+      type: 'park'
+    });
     console.log(parkPoint);
   });
   markers.push(marker);
