@@ -47,7 +47,7 @@ export default {
 
     map.on('click', 'yellowLine', function (e) {
       // alert('click yellow line');
-      thisisthis.$emit('point-click', {
+      thisI.$emit('point-click', {
         name: 'Yellow Line',
         lat: e.lngLat.lat,
         lng: e.lngLat.lng,
