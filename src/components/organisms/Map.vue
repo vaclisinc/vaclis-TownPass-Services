@@ -13,6 +13,16 @@ mapboxgl.accessToken =
   'pk.eyJ1IjoiZjc0MTE0NzYwIiwiYSI6ImNtMHJyenV3eTBjOGQyaXNicDFsbXU2YzIifQ.fhoguJDc6TfWAGwn471Hog';
 export default {
   emits: ['point-click'],
+  props: ['destPos'],
+  watch: {
+    destPos: {
+      handler: function (val) {
+        console.log('destPos:', val);
+      },
+      deep: true,
+      immediate: true
+    }
+  },
   mounted() {
     const thisisthis = this;
     const map = (this.map = new mapboxgl.Map({
