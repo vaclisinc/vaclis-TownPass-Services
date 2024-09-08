@@ -172,7 +172,7 @@ export default {
         .sort((a, b) => a.carRemainderNum - b.carRemainderNum)
         .forEach((i) =>
           makeMarker(
-            i.carRemainderNum,
+            Math.max(0,i.carRemainderNum),
             i.carRemainderNum > 0 ? '#693' : '#f20',
             i.carRemainderNum === 0 ? 20 : Math.min(50 * (i.carRemainderNum / 1000) + 25, 60),
             [i.lon, i.lat],
