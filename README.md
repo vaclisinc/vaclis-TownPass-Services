@@ -58,6 +58,6 @@ pnpm lint
 ---
 
 
-Developed with ❤️ by 游松澤 (Yu Song-Ze), 張羿軒 (Zhang Yi-Xuan), 劉力瑋 (Liu Li-Wei), 楊乃昀 ,張昀棠 (Zhang Yun-Tang)
+Developed with ❤️ by 游松澤 (Yu Song-Ze), 張羿軒 (Zhang Yi-Xuan), 劉力瑋 (Liu Li-Wei), 楊乃昀（Yang Nai-Yun） ,張昀棠 (Zhang Yun-Tang)
 
 Project Team: 嘻嘻的時候，黑客松松澤
