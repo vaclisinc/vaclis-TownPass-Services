@@ -11,7 +11,9 @@ import axios from 'axios';
 mapboxgl.accessToken =
   'pk.eyJ1IjoiZjc0MTE0NzYwIiwiYSI6ImNtMHJyenV3eTBjOGQyaXNicDFsbXU2YzIifQ.fhoguJDc6TfWAGwn471Hog';
 export default {
+  emits: ['point-click'],
   mounted() {
+    const thisisthis = this;
     const map = (this.map = new mapboxgl.Map({
       container: this.$refs.mapContainer,
       style: 'mapbox://styles/mapbox/light-v11', // Replace with your preferred map style
@@ -130,7 +132,15 @@ export default {
         1
       );
       // add markers to map
-      d0.parkingGrid.forEach((i) => i.available && makeMarker('1', '#26a7ac', 25, [i.lon, i.lat]));
+      d0.parkingGrid.forEach((i) => i.available && makeMarker('1', '#26a7ac', 25, [i.lon, i.lat], {
+        name: i.parkName,
+        lat: i.lat,
+        lng: i.lon,
+        remainingSpace: 1,
+        price: i.payex,
+        distance: 0,
+        type: 'park'
+      }));
       d0.parkingLot
         .sort((a, b) => a.carRemainderNum - b.carRemainderNum)
         .forEach((i) =>
@@ -138,7 +148,16 @@ export default {
             i.carRemainderNum,
             i.carRemainderNum > 0 ? '#693' : '#f20',
             i.carRemainderNum === 0 ? 20 : Math.min(50 * (i.carRemainderNum / 1000) + 25, 60),
-            [i.lon, i.lat]
+            [i.lon, i.lat],
+            {
+              name: i.parkName,
+              lat: i.lat,
+              lng: i.lon,
+              remainingSpace: i.carRemainderNum,
+              price: i.payex,
+              distance: 0,
+              type: 'park'
+            }
           )
         );
       console.log(d1);
@@ -165,7 +184,7 @@ export default {
       });
     }
 
-    function makeMarker(text, color, size, cord) {
+    function makeMarker(text, color, size, cord, parkPoint) {
       let el = document.createElement('div');
       el.className = 'marker';
       // Set text and size
@@ -177,7 +196,8 @@ export default {
 
       const marker = new mapboxgl.Marker(el).setLngLat(cord).addTo(map);
       marker.getElement().addEventListener('click', () => {
-        // $emit('point-click', )
+        thisisthis.$emit('point-click', parkPoint);
+        console.log(parkPoint);
       });
       markers.push(marker);
       return marker;
