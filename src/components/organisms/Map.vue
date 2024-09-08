@@ -5,6 +5,7 @@
 <script>
 import { useHandleConnectionData } from '../../composables/useHandleConnectionData';
 import { useConnectionMessage } from '../../composables/useConnectionMessage';
+import calcCrow from '@/utils/calcCrow';
 import mapboxgl from 'mapbox-gl';
 import axios from 'axios';
 
@@ -34,7 +35,7 @@ export default {
         lng: e.lngLat.lng,
         remainingSpace: 1,
         price: '',
-        distance: 0,
+        distance: calcCrow(e.lngLat.lat, e.lngLat.lng, userCoord[1], userCoord[0]),
         type: 'yellowLine'
       });
       clearAllLayer();
