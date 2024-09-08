@@ -90,9 +90,9 @@ const handleMarkParked = () => {
     // TODO: back to the map, send the parking information to the server
 };
 
-const handleTimerSet = (value: number, leaveEarly: boolean, isPark: boolean) => {
-    parkTimer.value = Math.max(0, value);
-    currentStep.value = NavigatorStep.ParkTimer;
+const handleTimerSet = (value: number, leaveEarly: boolean, isPark: boolean, place: string) => {
+  parkTimer.value = Math.max(0, value);
+  currentStep.value = NavigatorStep.ParkTimer;
 
     const notifyInterval = leaveEarly ? 1 : 5;
     const durationSec = (value - notifyInterval) * 60;
@@ -100,15 +100,16 @@ const handleTimerSet = (value: number, leaveEarly: boolean, isPark: boolean) => 
 
     var newDateObj = new Date(Date.now() + durationSec * 1000);
 
-    useConnectionMessage(
-        'timer_set',
-        JSON.stringify({
-            startTime: newDateObj,
-            duration: durationSec,
-            type: type,
-            remainTime: notifyInterval * 60
-        })
-    );
+  useConnectionMessage(
+    'timer_set',
+    JSON.stringify({
+      startTime: newDateObj,
+      duration: durationSec,
+      type: type,
+      remainTime: notifyInterval * 60,
+      place: place
+    })
+  );
 };
 
 const handleMemoSet = (value: string) => {
