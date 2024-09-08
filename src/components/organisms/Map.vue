@@ -254,7 +254,8 @@ function makeMarker(text, color, size, cord, remaining, info) {
       lng: info.lon,
       remainingSpace: remaining,
       price: info.payex,
-      distance: calcCrow(info.lat, info.lon, userCoord[1], userCoord[0]),
+      // distance: userCoord?calcCrow(info.lat, info.lon, userCoord[1], userCoord[0]):'--',
+      distance: 0,
       type: 'park'
     });
     console.log(parkPoint);
