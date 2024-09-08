@@ -39,7 +39,7 @@ const currentSelectedPark = ref<ParkPoint | null>({
 
 const parkTimer = ref(0); // 單位：半小時
 const parkMemo = ref(''); // 停車地點備註
-const currentStep = ref<NavigatorStep>(NavigatorStep.ParkConfirm);
+const currentStep = ref<NavigatorStep>(NavigatorStep.BrowsingMap);
 const handleMapClick = (point: ParkPoint) => {
     currentSelectedPark.value = point;
     currentStep.value =
@@ -94,6 +94,13 @@ const handleConfirmPark = () => {
 // 標示為已停車
 const handleMarkParked = () => {
     // TODO: back to the map, send the parking information to the server
+    currentSelectedPark.value = null;
+    currentStep.value = NavigatorStep.BrowsingMap;
+};
+
+// for DEMO: 直接抵達
+const handleArrive = () => {
+    currentStep.value = NavigatorStep.ParkConfirm;
 };
 
 const handleTimerSet = (value: number, leaveEarly: boolean, isPark: boolean, place: string) => {
@@ -143,6 +150,7 @@ const backClickHandler = ref(handleBackClick);
 const goClickHandler = ref(handleGoClick);
 const cancelNavigatingHandler = ref(handleCancelNavigating);
 const confirmParkHandler = ref(handleConfirmPark);
+const arriveHandler = ref(handleArrive);
 const markParkedHandler = ref(handleMarkParked);
 const timerSetHandler = ref(handleTimerSet);
 const memoSetHandler = ref(handleMemoSet);
@@ -165,6 +173,7 @@ const isShowNavigatorCard = computed(() => currentSelectedPark.value !== null);
             @button-go="goClickHandler" @button-cancel-navigating="cancelNavigatingHandler"
             @button-confirm-park="confirmParkHandler" @button-cancel-park="cancelParkHandler"
             @button-leave="leaveHandler" @button-mark-parked="markParkedHandler" @button-set-timer="timerSetHandler"
-            @button-set-memo="memoSetHandler" :pos="{lat: currentSelectedPark?.lat ?? 0, lng: currentSelectedPark?.lng ?? 0}" />
+            @button-set-memo="memoSetHandler" @button-demo-directly-arrive="arriveHandler"
+            :pos="{lat: currentSelectedPark?.lat ?? 0, lng: currentSelectedPark?.lng ?? 0}" />
     </div>
 </template>

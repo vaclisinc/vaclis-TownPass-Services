@@ -32,6 +32,7 @@ const emit = defineEmits([
   'button-set-memo',
   'button-set-timer',
   'button-skip-timer',
+  'button-demo-directly-arrive',
   'button-confirm-park',
   'button-leave'
 ]);
@@ -133,9 +134,8 @@ const formattedTime = (time: number) => {
     <div v-else-if="isNavigating" class="container">
       <h2 class="text-2xl w-full text-center p-2">導航中</h2>
       <div class="button-set p-2">
-        <BaseButton outline class="button" @click="$emit('button-cancel-navigating')"
-          >取消導航</BaseButton
-        >
+        <BaseButton outline class="button" @click="$emit('button-cancel-navigating')">取消導航</BaseButton>
+        <BaseButton class="button" @click="$emit('button-demo-directly-arrive')">到達</BaseButton>
       </div>
     </div>
     <!-- 停車確認 -->
