@@ -123,7 +123,7 @@ const formattedTime = (time: number) => {
         <p>距離：{{ props.distance }}公尺</p>
       </div>
       <div class="button-set">
-        <BaseButton class="button button-go" @click="$emit('button-go')">前往</BaseButton>
+        <BaseButton class="button button-go" @click="$emit('button-go', props.pos)">前往</BaseButton>
         <BaseButton outline class="button button-back" @click="$emit('button-back')">
           返回
         </BaseButton>

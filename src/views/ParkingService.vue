@@ -50,9 +50,9 @@ export interface Point {
     lat: number;
     lng: number;
 }
-const destPos = ref<Point>({ lat: 0, lng: 0 });
+const destPos = ref<Point | null>(null);
 // 前往目的地
-const handleGoClick = (dest: Point) => {
+const handleGoClick = (dest: Point | null) => {
     // TODO: pop up the routing card
     destPos.value = dest;
     currentStep.value = NavigatorStep.Navigating;
