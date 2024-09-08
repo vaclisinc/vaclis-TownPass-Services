@@ -2,9 +2,11 @@
 import BaseButton from '@/components/atoms/BaseButton.vue';
 import { computed, ref, watch } from 'vue';
 import BaseInput from '../atoms/BaseInput.vue';
+import type { Point } from '@/views/ParkingService.vue';
 const props = defineProps<{
   parkName: string | null;
   remainingSpace: number | null;
+  pos: Point | null;
   price: string | null;
   distance: number | null;
   timePassed: number | null; // 單位：秒
@@ -108,7 +110,7 @@ const formattedTime = (time: number) => {
         </div>
       </div>
       <div class="button-set">
-        <BaseButton class="button button-go" @click="$emit('button-go')">前往</BaseButton>
+        <BaseButton class="button button-go" @click="$emit('button-go', props.pos)">前往</BaseButton>
         <BaseButton outline class="button button-back" @click="$emit('button-back')">
           取消
         </BaseButton>
