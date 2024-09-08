@@ -88,7 +88,7 @@ const handleConfirmPark = () => {
     parkTimer.value = 3;
     currentStep.value = NavigatorStep.ParkTimer;
   } else {
-    currentStep.value = NavigatorStep.ParkSetTimer;
+    currentStep.value = NavigatorStep.ParkLocationMemo;
   }
 };
 
