@@ -25,6 +25,7 @@ export default {
         if (!val) return;
         console.log('destPos:', val);
         clearAllLayer();
+        makeMarker('', '#26a7ac', 25, [val.lng, val.lat], 1, null);
         zoomToFeat([userCoord, [val.lng, val.lat]]);
       },
       deep: true,
@@ -40,7 +41,7 @@ export default {
       zoom: 15
     });
 
-    map.on('moveend', (e) => {
+    map.on('dragend', (e) => {
       console.log('move end:', e);
       getParkingData();
     });
@@ -248,6 +249,7 @@ function makeMarker(text, color, size, cord, remaining, info) {
   el.append(sp);
 
   const marker = new mapboxgl.Marker(el).setLngLat(cord).addTo(map);
+  if(info)
   marker.getElement().addEventListener('click', () => {
     thisI.$emit('point-click', {
       name: info.parkName,
