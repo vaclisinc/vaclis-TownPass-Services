@@ -107,11 +107,13 @@ const formattedTime = (time: number) => {
         </div>
         <div class="flex-row max-w-48 justify-between">
           <p>距離：</p>
-          <p class="text-gray-500">{{ props.distance }} 公尺</p>
+          <p class="text-gray-500">{{ props.distance.toFixed(2) }} 公里</p>
         </div>
       </div>
       <div class="button-set">
-        <BaseButton class="button button-go" @click="$emit('button-go', props.pos)">前往</BaseButton>
+        <BaseButton class="button button-go" @click="$emit('button-go', props.pos)"
+          >前往</BaseButton
+        >
         <BaseButton outline class="button button-back" @click="$emit('button-back')">
           取消
         </BaseButton>
@@ -121,7 +123,7 @@ const formattedTime = (time: number) => {
     <div v-else-if="isNavigatorYellowLine" class="container">
       <h2 class="text-2xl w-full text-center p-2">黃線</h2>
       <div class="align-center text-center w-2x pt-2 pb-4">
-        <p>距離：{{ props.distance }}公尺</p>
+        <p>距離：{{ props.distance }}公里</p>
       </div>
       <div class="button-set">
         <BaseButton class="button button-go" @click="$emit('button-go', props.pos)">前往</BaseButton>
@@ -189,7 +191,9 @@ const formattedTime = (time: number) => {
         <span :class="timerTextColor" class="text-xl font-bold pb-1">
           {{ formattedTime(Math.floor(parkCountup / 60)) /* 傳分鐘進去 */ }}
         </span>
-        <span class="text-grey-500 text-xl font-bold">/{{ formattedTime(props.maxTime ?? 0) }}</span>
+        <span class="text-grey-500 text-xl font-bold"
+          >/{{ formattedTime(props.maxTime ?? 0) }}</span
+        >
       </div>
       <div class="text-center pb-2">
         <span class="text-lg text-center"

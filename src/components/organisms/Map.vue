@@ -5,8 +5,14 @@
 <script>
 import { useHandleConnectionData } from '../../composables/useHandleConnectionData';
 import { useConnectionMessage } from '../../composables/useConnectionMessage';
+import calcCrow from '@/utils/calcCrow';
 import mapboxgl from 'mapbox-gl';
 import axios from 'axios';
+
+let thisI;
+let map;
+let userCoord = null;
+const markers = [];
 
 mapboxgl.accessToken =
   'pk.eyJ1IjoiZjc0MTE0NzYwIiwiYSI6ImNtMHJyenV3eTBjOGQyaXNicDFsbXU2YzIifQ.fhoguJDc6TfWAGwn471Hog';
@@ -16,20 +22,23 @@ export default {
   watch: {
     destPos: {
       handler: function (val) {
+        if(!val) return;
         console.log('destPos:', val);
+        clearAllLayer();
+        zoomToFeat([userCoord, [val.lng, val.lat]]);
       },
       deep: true,
       immediate: true
     }
   },
   mounted() {
-    const thisisthis = this;
-    const map = (this.map = new mapboxgl.Map({
+    thisI = this;
+    map = this.map = new mapboxgl.Map({
       container: this.$refs.mapContainer,
       style: 'mapbox://styles/mapbox/light-v11', // Replace with your preferred map style
       center: [121.5624999, 25.0325917],
       zoom: 15
-    }));
+    });
 
     map.on('moveend', (e) => {
       console.log('move end:', e);
@@ -44,14 +53,10 @@ export default {
         lng: e.lngLat.lng,
         remainingSpace: 1,
         price: '',
-        distance: 0,
+        distance: calcCrow(e.lngLat.lat, e.lngLat.lng, userCoord[1], userCoord[0]),
         type: 'yellowLine'
       });
-      clearAllLayer();
-      zoomToFeat([userCoord, [e.lngLat.lng, e.lngLat.lat]]);
     });
-
-    let userCoord = null;
 
     let getCurrentPosCallback = null;
     let watchPositionId = 0;
@@ -109,7 +114,6 @@ export default {
     });
 
     let updating = false;
-    const markers = [];
 
     getParkingData();
 
@@ -215,100 +219,100 @@ export default {
         }
       });
     }
-
-    function clearAllLayer() {
-      removeSourceAndLayer('parkingLot');
-      removeSourceAndLayer('parkingGrid');
-      removeSourceAndLayer('yellowLine');
-      markers.forEach((i) => i.remove());
-    }
-
-    function zoomToFeat(coordinates) {
-      // based on this: https://www.mapbox.com/mapbox-gl-js/example/zoomto-linestring/
-
-      // Pass the first coordinates in the LineString to `lngLatBounds` &
-      // wrap each coordinate pair in `extend` to include them in the bounds
-      // result. A variation of this technique could be applied to zooming
-      // to the bounds of multiple Points or Polygon geomteries - it just
-      // requires wrapping all the coordinates with the extend method.
-      var bounds = coordinates.reduce(
-        function (bounds, coord) {
-          return bounds.extend(coord);
-        },
-        new mapboxgl.LngLatBounds(coordinates[0], coordinates[0])
-      );
-
-      map.fitBounds(bounds, {
-        padding: 20
-      });
-    }
-
-    function makeMarker(text, color, size, cord, parkPoint) {
-      let el = document.createElement('div');
-      el.className = 'marker';
-      // Set text and size
-      let sp = document.createElement('span');
-      sp.innerHTML = '<b>' + text + '</b>';
-      sp.style.background = color;
-      sp.style.width = sp.style.height = size + 'px';
-      el.append(sp);
-
-      const marker = new mapboxgl.Marker(el).setLngLat(cord).addTo(map);
-      marker.getElement().addEventListener('click', () => {
-        thisisthis.$emit('point-click', parkPoint);
-        console.log(parkPoint);
-      });
-      markers.push(marker);
-      return marker;
-    }
-
-    function removeSourceAndLayer(id) {
-      const srcId = id + '_src';
-      if (map.getLayer(id)) map.removeLayer(id);
-      if (map.getSource(srcId)) map.removeSource(srcId);
-    }
-
-    function addSourceAndLayer(id, features, layerConfig) {
-      const srcId = id + '_src';
-      if (map.getLayer(id)) map.removeLayer(id);
-      if (map.getSource(srcId)) map.removeSource(srcId);
-      map.addSource(srcId, {
-        type: 'geojson',
-        data: { type: 'FeatureCollection', features: features }
-      });
-      layerConfig.id = id;
-      layerConfig.source = srcId;
-      map.addLayer(layerConfig);
-    }
-
-    function addPoints(id, features, opacity, radius) {
-      addSourceAndLayer(id, features, {
-        type: 'circle',
-        layout: {},
-        paint: {
-          'circle-opacity': opacity,
-          'circle-color': ['get', 'color'],
-          'circle-radius': radius
-        }
-      });
-    }
-
-    function addPolygon(id, features, opacity) {
-      addSourceAndLayer(id, features, {
-        type: 'fill',
-        layout: {},
-        paint: {
-          'fill-opacity': opacity,
-          'fill-color': ['get', 'color']
-        }
-      });
-    }
   },
   unmounted() {
     this.map.remove();
     this.map = null;
   }
 };
+
+function clearAllLayer() {
+  removeSourceAndLayer('parkingLot');
+  removeSourceAndLayer('parkingGrid');
+  removeSourceAndLayer('yellowLine');
+  markers.forEach((i) => i.remove());
+}
+
+function zoomToFeat(coordinates) {
+  // based on this: https://www.mapbox.com/mapbox-gl-js/example/zoomto-linestring/
+
+  // Pass the first coordinates in the LineString to `lngLatBounds` &
+  // wrap each coordinate pair in `extend` to include them in the bounds
+  // result. A variation of this technique could be applied to zooming
+  // to the bounds of multiple Points or Polygon geomteries - it just
+  // requires wrapping all the coordinates with the extend method.
+  var bounds = coordinates.reduce(
+    function (bounds, coord) {
+      return bounds.extend(coord);
+    },
+    new mapboxgl.LngLatBounds(coordinates[0], coordinates[0])
+  );
+
+  map.fitBounds(bounds, {
+    padding: 100
+  });
+}
+
+function makeMarker(text, color, size, cord, parkPoint) {
+  let el = document.createElement('div');
+  el.className = 'marker';
+  // Set text and size
+  let sp = document.createElement('span');
+  sp.innerHTML = '<b>' + text + '</b>';
+  sp.style.background = color;
+  sp.style.width = sp.style.height = size + 'px';
+  el.append(sp);
+
+  const marker = new mapboxgl.Marker(el).setLngLat(cord).addTo(map);
+  marker.getElement().addEventListener('click', () => {
+    thisI.$emit('point-click', parkPoint);
+    console.log(parkPoint);
+  });
+  markers.push(marker);
+  return marker;
+}
+
+function removeSourceAndLayer(id) {
+  const srcId = id + '_src';
+  if (map.getLayer(id)) map.removeLayer(id);
+  if (map.getSource(srcId)) map.removeSource(srcId);
+}
+
+function addSourceAndLayer(id, features, layerConfig) {
+  const srcId = id + '_src';
+  if (map.getLayer(id)) map.removeLayer(id);
+  if (map.getSource(srcId)) map.removeSource(srcId);
+  map.addSource(srcId, {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features: features }
+  });
+  layerConfig.id = id;
+  layerConfig.source = srcId;
+  map.addLayer(layerConfig);
+}
+
+function addPoints(id, features, opacity, radius) {
+  addSourceAndLayer(id, features, {
+    type: 'circle',
+    layout: {},
+    paint: {
+      'circle-opacity': opacity,
+      'circle-color': ['get', 'color'],
+      'circle-radius': radius
+    }
+  });
+}
+
+function addPolygon(id, features, opacity) {
+  addSourceAndLayer(id, features, {
+    type: 'fill',
+    layout: {},
+    paint: {
+      'fill-opacity': opacity,
+      'fill-color': ['get', 'color']
+    }
+  });
+}
 </script>
 
 <style>
