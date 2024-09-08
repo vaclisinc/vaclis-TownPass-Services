@@ -43,7 +43,7 @@ const isParkLocationMemo = computed(() => props.display === 'park_location_memo'
 const isParkSetTimer = computed(() => props.display === 'park_set_timer');
 const isParkTimer = computed(() => props.display === 'park_timer');
 const warningThreshold = computed(() => (props.leaveEarly ? 1 : 5));
-const pricePerHour = computed(() => parseFloat(props.price.replace('元/小時', '')));
+const pricePerHour = computed(() => parseFloat(props.price?.replace('元/小時', '') ?? '0'));
 
 const parkTimer = ref(0);
 const parkMemo = ref('');
@@ -189,7 +189,7 @@ const formattedTime = (time: number) => {
         <span :class="timerTextColor" class="text-xl font-bold pb-1">
           {{ formattedTime(Math.floor(parkCountup / 60)) /* 傳分鐘進去 */ }}
         </span>
-        <span class="text-grey-500 text-xl font-bold">/{{ formattedTime(props.maxTime) }}</span>
+        <span class="text-grey-500 text-xl font-bold">/{{ formattedTime(props.maxTime ?? 0) }}</span>
       </div>
       <div class="text-center pb-2">
         <span class="text-lg text-center"

@@ -67,7 +67,7 @@ const handleBackClick = () => {
 // 取消導航，回到地標
 const handleCancelNavigating = () => {
     currentStep.value =
-        currentSelectedPark.value.type === 'park'
+        currentSelectedPark.value?.type === 'park'
             ? NavigatorStep.NavigatorPark
             : NavigatorStep.NavigatorYellowLine;
 };
@@ -127,7 +127,7 @@ const handleMemoSet = (value: string) => {
 const handleCancelPark = () => {
     // back to the point
     currentStep.value =
-        currentSelectedPark.value.type === 'park'
+        currentSelectedPark.value?.type === 'park'
             ? NavigatorStep.NavigatorPark
             : NavigatorStep.NavigatorYellowLine;
 };
