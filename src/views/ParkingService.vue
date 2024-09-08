@@ -46,9 +46,15 @@ const handleMapClick = (point: ParkPoint) => {
         point.type === 'park' ? NavigatorStep.NavigatorPark : NavigatorStep.NavigatorYellowLine;
 };
 
+export interface Point {
+    lat: number;
+    lng: number;
+}
+const destPos = ref<Point>({ lat: 0, lng: 0 });
 // 前往目的地
-const handleGoClick = () => {
+const handleGoClick = (dest: Point) => {
     // TODO: pop up the routing card
+    destPos.value = dest;
     currentStep.value = NavigatorStep.Navigating;
 };
 
@@ -150,7 +156,7 @@ const isShowNavigatorCard = computed(() => currentSelectedPark.value !== null);
 <template>
     <div class="h-screen flex flex-col overflow-hidden relative">
         <div class="flex flex-1">
-            <Map @point-click="pointClickHandler" />
+            <Map @point-click="pointClickHandler" :destPos />
         </div>
         <NavigatorCard v-show="isShowNavigatorCard" :parkName="currentSelectedPark?.name ?? null"
             :remainingSpace="currentSelectedPark?.remainingSpace ?? null" :price="currentSelectedPark?.price ?? null"
@@ -159,6 +165,6 @@ const isShowNavigatorCard = computed(() => currentSelectedPark.value !== null);
             @button-go="goClickHandler" @button-cancel-navigating="cancelNavigatingHandler"
             @button-confirm-park="confirmParkHandler" @button-cancel-park="cancelParkHandler"
             @button-leave="leaveHandler" @button-mark-parked="markParkedHandler" @button-set-timer="timerSetHandler"
-            @button-set-memo="memoSetHandler" />
+            @button-set-memo="memoSetHandler" :pos="{lat: currentSelectedPark?.lat ?? 0, lng: currentSelectedPark?.lng ?? 0}" />
     </div>
 </template>
