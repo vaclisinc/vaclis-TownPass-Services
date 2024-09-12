@@ -1,46 +1,59 @@
-# ParkFlow_TownPass-Services
+# ParkFlow - TownPass Services
 
-ParkFlow webview part project made with Vue3 in Vite.
+ParkFlow is a web-based application built with Vue3 and Vite, designed to make parking in Taipei more efficient and user-friendly by providing real-time parking information and assistance.
 
-
+This project was developed during a 24-hour non-stop Taipei Hackathon, where we were selected as one of the top 12 teams out of 55 entries. We proudly secured third place, winning a prize of NT$100,000.
 
 ## Features
 1. ***Real-time Data Pipeline***
-   Fetches real-time data from external sources, such as the Taipei parking API, and processes it to provide users with current parking grid availability.
+   Integrates with external sources such as the Taipei parking API to deliver up-to-date parking availability for different parking grids in Taipei.
 
 2. ***Parking Area Notifications***:
-   Sends notifications to users about parking duration and fees, ensuring they stay informed and avoid penalties.
+   Notifies users about parking duration and fees to help avoid penalties, ensuring they remain informed throughout their parking period.
 
 3. ***Yellow Line Service***:
-   Assists users with parking near yellow lines based on traffic conditions. During peak hours, the system provides a 3-minute buffer alert for parking time limits. During off-peak hours, it guides users on how to make the most of yellow line parking where permitted.
+   Assists users with parking near yellow lines, adapting to traffic conditions. Provides a 3-minute buffer alert during peak hours and offers guidance on maximizing yellow line parking during off-peak hours where permitted.
 
 ## Technologies Stack
+- Vue 3: Front-end framework for building user interfaces.
+- Vite: Fast development server and build tool for modern web projects.
+- Flutter: Enables bi-directional communication between the web application and mobile devices for notifications and GPS functionality.
+- Mapbox: Provides interactive maps and location services to help users find parking spots and navigate to them easily.
+- Real-time Data APIs: Integration with Taipei parking API and other external data sources to provide current parking information.
+- Notifications & GPS: Supports two-way communication with Flutter for sending notifications and receiving GPS data, ensuring a seamless user experience across web and mobile platforms.
+
 
 
 ## Getting Started
 ### Recommended IDE Setup
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- [VSCode](https://code.visualstudio.com/)
+- [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
 
 ### Project Setup
 
+Install the required dependencies:
 ```sh
 pnpm install
 ```
 
 ### Compile and Hot-Reload for Development
 
+Compile and start the development server:
 ```sh
 pnpm dev
 ```
 
-### Type-Check, Compile and Minify for Production
+### Production
 
+Type-check, compile, and minify the code for production:
 ```sh
 pnpm build
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+### Linting
+
+Lint the code using [ESLint](https://eslint.org/):
 
 ```sh
 pnpm lint
