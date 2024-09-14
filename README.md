@@ -1,8 +1,10 @@
-# ParkFlow - TownPass Services
+# ParkFlow - TownPass Services（找車位——台北通微服務）
 
 ParkFlow is a web-based application built with Vue3 and Vite, designed to make parking in Taipei more efficient and user-friendly by providing real-time parking information and assistance.
 
 This project was developed during a 24-hour non-stop Taipei Hackathon, where we were selected as one of the top 12 teams out of 55 entries. We proudly secured third place, winning a prize of NT$100,000.
+
+![ParkFlow Preview](https://raw.githubusercontent.com/SimonLiu423/cc_diary/ec4694b2518ead544a0f982be761f6c4276f51dd/presentation/ccDiary_intro.gif)
 
 ## Features
 1. ***Real-time Data Pipeline***
@@ -13,6 +15,11 @@ This project was developed during a 24-hour non-stop Taipei Hackathon, where we 
 
 3. ***Yellow Line Service***:
    Assists users with parking near yellow lines, adapting to traffic conditions. Provides a 3-minute buffer alert during peak hours and offers guidance on maximizing yellow line parking during off-peak hours where permitted.
+
+## Demo 
+
+For a behind-the-scenes look at our journey, including the development process, final presentation, and award ceremony, check out our [YouTube vlog](https://www.youtube.com/watch?v=ZP9nikrbwak&t=15s).
+
 
 ## Technologies Stack
 - Vue 3: Front-end framework for building user interfaces.
