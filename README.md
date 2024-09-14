@@ -4,7 +4,7 @@ ParkFlow is a web-based application built with Vue3 and Vite, designed to make p
 
 This project was developed during a 24-hour non-stop Taipei Hackathon, where we were selected as one of the top 12 teams out of 55 entries. We proudly secured third place, winning a prize of NT$100,000.
 
-![ParkFlow Preview](https://raw.githubusercontent.com/SimonLiu423/cc_diary/ec4694b2518ead544a0f982be761f6c4276f51dd/presentation/ccDiary_intro.gif)
+![ParkFlow Preview](https://raw.githubusercontent.com/vaclisinc/vaclis-TownPass-Services/24ec17c43d856ad05349fb072df98daaa7e2178c/parkflow_preview.jpg)
 
 ## Features
 1. ***Real-time Data Pipeline***
